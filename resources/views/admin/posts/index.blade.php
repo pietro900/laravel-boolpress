@@ -18,6 +18,7 @@
                             <th>ID</th>
                             <th>Titolo</th>
                             <th>Slug</th>
+                            <th>Categoria</th>
                             <th>Azioni</th>
                         </tr>
                     </thead>
@@ -27,6 +28,18 @@
                                 <td>{{ $post->id }}</td>
                                 <td>{{ $post->title }}</td>
                                 <td>{{ $post->slug }}</td>
+                                <td>
+
+                                    @if($post->category)
+                                            {{ $post->category->name }}
+                                    @else
+                                        -
+                                    @endif
+                                    {{ $post->category ? $post->category->name : '-'}}
+                                    {{-- metodo alternativo --}}
+                                    {{-- {{ $post->category->name ?? '-' }} --}}
+
+                                </td>
                                 <td>
                                     <a class="btn btn-small btn-info"
                                     href="{{ route('admin.posts.show', ['post' => $post->id]) }}">

@@ -38,13 +38,28 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
+        // validazione dei dati
         $request->validate([
             'title' => 'required|max:255|unique:posts,title',
             'content' => 'required'
         ]);
+
         $dati = $request->all();
+        // genero lo slug a partire dal titolo
         $slug = Str::of($dati['title'])->slug('-');
+        $slug_originale = $slug;
+        // verifico che lo slug sia unico
+        $post_trovato = Post::where('slug', $slug)->first();
+        $contatore = 0;
+        while($post_trovato) {
+            $contatore++;
+            // genero un nuovo slug concatenando un contatore
+            $slug = $slug_originale . '-' . $contatore;
+            $post_trovato = Post::where('slug', $slug)->first();
+        }
+        // arrivati a questo punto sono sicura che $slug contiene uno slug unico
         $dati['slug'] = $slug;
+        // salvo i dati del post
         $nuovo_post = new Post();
         $nuovo_post->fill($dati);
         $nuovo_post->save();
@@ -92,15 +107,31 @@ class PostController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // validazione dei dati
         $request->validate([
-            'title' => 'required|max:255|unique:posts,title,'.$id,
+            'title' => 'required|max:255|unique:posts,title',
             'content' => 'required'
         ]);
+
         $dati = $request->all();
+        // genero lo slug a partire dal titolo
         $slug = Str::of($dati['title'])->slug('-');
+        $slug_originale = $slug;
+        // verifico che lo slug sia unico
+        $post_trovato = Post::where('slug', $slug)->first();
+        $contatore = 0;
+        while($post_trovato) {
+            $contatore++;
+            // genero un nuovo slug concatenando un contatore
+            $slug = $slug_originale . '-' . $contatore;
+            $post_trovato = Post::where('slug', $slug)->first();
+        }
+        // arrivati a questo punto sono sicura che $slug contiene uno slug unico
         $dati['slug'] = $slug;
-        $post = Post::find($id);
-        $post->update($dati);
+        // salvo i dati del post
+        $nuovo_post = new Post();
+        $nuovo_post->fill($dati);
+        $nuovo_post->save();
         return redirect()->route('admin.posts.index');
     }
 
